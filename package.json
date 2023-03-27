@@ -1,14 +1,16 @@
 {
-  "name": "vite-template-solid",
+  "author": "Ben Martin",
+  "name": "chess-game-data-entry-assistant",
   "version": "0.0.0",
-  "description": "",
+  "license": "GPL-3.0-or-later",
+  "private": "true",
+  "description": "Assists in the typing of handwritten chess moves by simplifying the process of finding and fixing the erroneous moves",
   "scripts": {
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },
-  "license": "MIT",
   "devDependencies": {
     "typescript": "^4.9.5",
     "vite": "^4.1.1",
