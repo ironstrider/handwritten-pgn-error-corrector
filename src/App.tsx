@@ -1,6 +1,13 @@
-import { Component, createSignal, For } from 'solid-js';
+import { Component, createSignal, For, Index, Match, Switch } from 'solid-js';
+import { createStore } from "solid-js/store";
 
 import { Chess } from "chess.js";
+import { Config, useChessground } from "solid-chessground";
+
+import "chessground/assets/chessground.base.css"
+// the included colour theme is quite ugly :/
+import "chessground/assets/chessground.brown.css"
+import "chessground/assets/chessground.cburnett.css"
 
 function checkMoves(moves: string[]) {
   let chess = new Chess();
@@ -19,61 +26,124 @@ function checkMoves(moves: string[]) {
   return result;
 }
 
+interface MoveInfo {
+  san: string,
+  fen: string | null,
+}
+
+enum MoveState {
+  Ok = 'ok',
+  FirstError = 'first-error',
+  Unknown = 'unknown',
+}
+
+interface MoveProps {
+  san: string,
+  state: MoveState,
+  onClick?: (ev: MouseEvent) => void
+}
+
+const Move: Component<MoveProps> = (props) => {
+  return <div onClick={props.onClick}>
+    {props.san}
+    <Switch fallback="?">
+      <Match when={props.state === MoveState.Ok}>✔️</Match>
+      <Match when={props.state === MoveState.FirstError}>❌</Match>
+    </Switch>
+  </div>
+}
+
 const App: Component = () => {
   let initialFen = (new Chess()).fen();
-  let [fen, setFen] = createSignal(initialFen);
-  let [moves, setMoves] = createSignal([] as string[]);
+  let [state, setState] = createStore({
+    moves: [] as MoveInfo[]
+  });
 
-  let addMoves = (moveText: string) => {
-    setMoves(moves => {
-      let newMoves = [...moves, ...moveText.split(/\s+/g)];
+  let [pgnText, setPgnText] = createSignal(`e4 c5
+Nf3 d6
+d4 cxd4
+Nxd4 Nf6
+Nc3 a6
+Be3`)
 
-      console.log('valid moves', checkMoves(newMoves));
+  let cgConfig: Config = {
+    orientation: 'white',
+    viewOnly: true,
+  };
+  let cg = useChessground();
 
-      return newMoves;
-    })
+  let loadText = (moveText: string) => {
+    let moves: MoveInfo[] = moveText.split(/\s+/g).map(san => {
+      return { san, fen: null }
+    });
+
+    let chess = new Chess();
+
+    for (const move of moves) {
+      let res;
+      try {
+        res = chess.move(move.san);
+      } catch (e) {
+        // invalid move
+        break;
+      }
+
+      move.fen = res.after;
+    }
+
+    setState("moves", moves);
   }
 
   let selectMove = (ply: number) => {
-    let validMoves = checkMoves(moves());
-    setFen(validMoves[ply].after)
+    let fen: string;
+    if (ply === 0) {
+      fen = initialFen;
+    } else {
+      let move = state.moves[ply - 1];
+      if (move.fen !== null) {
+        fen = move.fen;
+      } else {
+        return;
+      }
+    }
+
+    cg.api!.set({
+      fen,
+    });
   }
 
   return (
-    <div class="dislay: grid; grid-template-columns: auto;">
-      <code>Fen: {fen()}</code>
-      <div style="display: grid; grid-template-columns: auto auto auto; grid-column-gap: 2em;">
-        <span></span>
-        <span onClick={() => { setFen(initialFen) }} style="grid-column: span 2"><em>Start</em></span>
-        <For each={moves()}>
-          {(move, index) => {
+    <div>
+      <div style="width: 400px; aspect-ratio: 1/1" ref={el => cg.mount(el, cgConfig)}></div>
 
-            let i = index();
-
-            if (i % 2 === 1) {
-              return <span onClick={() => selectMove(i)}>{move}</span>
+      <div>
+        <h3>Moves</h3>
+        <Move san="@start@" state={MoveState.Ok} onClick={() => { selectMove(0) }} />
+        <Index each={state.moves}>{(move, i) => {
+          let moveState = () => {
+            if (move().fen !== null) {
+              return MoveState.Ok;
+            } else if (i === 0 || state.moves[i - 1].fen !== null) {
+              return MoveState.FirstError;
             } else {
-              return <>
-                <span>{Math.floor(i / 2 + 1)}. </span>
-                <span onClick={() => selectMove(i)}>{move}</span>
-              </>
+              return MoveState.Unknown;
             }
+          };
 
-
-          }}
-        </For>
+          return <Move san={move().san} state={moveState()} onClick={() => { selectMove(i + 1) }} />
+        }}</Index>
       </div>
 
+      <div>
+        <button onClick={() => loadText(pgnText())}>Load text</button>
+      </div>
 
-      <textarea style="width: 50%; margin: 3em auto; min-height: 300px;" onKeyDown={(ev) => {
-        if (ev.key === "Enter") {
-          addMoves(ev.currentTarget.value);
-          ev.currentTarget.value = "";
-          ev.preventDefault();
-        }
-      }}></textarea>
+      <textarea style="width: 500px;" rows={10} onInput={el => setPgnText(el.currentTarget.value)}>
+        {pgnText()}
+      </textarea>
+
     </div>
-  );
-};
+  )
+}
 
 export default App;
