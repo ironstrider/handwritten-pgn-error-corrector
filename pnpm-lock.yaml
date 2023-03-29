@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@solid-primitives/clipboard':
+    specifier: ^1.5.3
+    version: 1.5.3(solid-js@1.6.16)
   chess.js:
     specifier: 1.0.0-beta.4
     version: 1.0.0-beta.4
@@ -607,6 +610,23 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
     dev: true
+
+  /@solid-primitives/clipboard@1.5.3(solid-js@1.6.16):
+    resolution: {integrity: sha512-ucxmz6wQIFlpigMZ8a8PjNGaPnVrVXW2e2E/oQbD6SemOoXw2pAH7nIs7KjMZXjTrDfe8iq270m6uwGt8nuV0w==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      '@solid-primitives/utils': 5.5.2(solid-js@1.6.16)
+      solid-js: 1.6.16
+    dev: false
+
+  /@solid-primitives/utils@5.5.2(solid-js@1.6.16):
+    resolution: {integrity: sha512-L52ig3eHKU6CqbPCKJIb4lweBuINHBOERcE1duApyKozEN8+zCqEKwD1Qo9ljKeEzJTBGWClxNpwEiNTUWTGvg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      solid-js: 1.6.16
+    dev: false
 
   /acorn-node@1.8.2:
     resolution: {integrity: sha512-8mt+fslDufLYntIoPAaIMUe/lrbrehIiwmR3t2k9LljIzoigEPF27eLk2hy8zSGzmR/ogr7zbRKINMo1u0yh5A==}
