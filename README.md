@@ -2,10 +2,13 @@
 
 Chess games that are recorded by hand can often contain mistakes (reversed/flipped squares, file/rank off-by-one, move omitted, etc.). This app simplifies the process of locating and correcting such errors.
 
+## Live Demo
+[https://ironstrider.github.io/handwritten-pgn-error-corrector/]
+
 ## TODO:
 - [ ] Project
   - [ ] Readme
-  - [ ] Deploy to gh-pages
+  - [x] Deploy to gh-pages
 - [ ] Functionality
   - [ ] Show feedback when clicking export pgn
   - [ ] Improve styling of move table

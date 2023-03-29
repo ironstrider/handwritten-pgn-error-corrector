@@ -6,11 +6,13 @@
   "private": "true",
   "description": "Simplifies the process of locating and correcting errors in handwritten chess game recordings",
   "packageManager": "pnpm@8.0.0",
+  "repository": "https://github.com/ironstrider/handwritten-pgn-error-corrector",
   "scripts": {
     "start": "vite",
-    "dev": "vite",
+    "dev": "vite --base=/",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy": "pnpm build && gh-pages -d dist"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
@@ -24,6 +26,7 @@
     "@solid-primitives/clipboard": "^1.5.3",
     "chess.js": "1.0.0-beta.4",
     "chessground": "^8.3.7",
+    "gh-pages": "^5.0.0",
     "solid-chessground": "^0.0.2",
     "solid-js": "^1.6.16"
   }
