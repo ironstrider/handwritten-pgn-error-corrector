@@ -3,28 +3,11 @@ import { createStore } from "solid-js/store";
 
 import { Chess } from "chess.js";
 import { Config, useChessground } from "solid-chessground";
+import { Key } from 'chessground/types';
 
 import "chessground/assets/chessground.base.css"
 import "./assets/chessground.brown.css";
 import "chessground/assets/chessground.cburnett.css"
-import { Key } from 'chessground/types';
-
-function checkMoves(moves: string[]) {
-  let chess = new Chess();
-
-  let result = [];
-
-  for (let [ply, move] of moves.entries()) {
-    try {
-      result.push(chess.move(move));
-    } catch (e) {
-      // invalid move
-      break;
-    }
-  }
-
-  return result;
-}
 
 interface MoveInfo {
   san: string,
@@ -75,7 +58,7 @@ const App: Component = () => {
       setState("ply", 0);
     } else {
       // out-of-bounds or invalid
-      if (ply > state.moves.length || state.moves[ply - 1].fen === null) {
+      if (ply < 0 || ply > state.moves.length || state.moves[ply - 1].fen === null) {
         return;
       }
 
@@ -83,12 +66,13 @@ const App: Component = () => {
     }
   }
 
-  let [pgnText, setPgnText] = createSignal(`e4 c5
+  let moveTextPlaceholder = `e4 c5
 Nf3 d6
 d4 cxd4
 Nxd4 Nf6
-Nc3 a6
-Be3`)
+Nc3 a6`;
+
+  let [pgnText, setPgnText] = createSignal(moveTextPlaceholder)
 
   let cgConfig: Config = {
     orientation: 'white',
@@ -157,10 +141,15 @@ Be3`)
       </div>
 
       <div>
+        {/* TODO: disable prev @ start & next @ end */}
+        <div class="w-full grid grid-cols-2 gap-2 p-2">
+          <button onClick={(el) => { setPly(state.ply - 1) }} class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Prev</button>
+          <button onClick={(el) => { setPly(state.ply + 1) }} class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Next</button>
+        </div>
         <div class="grid grid-cols-[min-content_1fr_1fr]">
           <MoveNumber num={null} />
-          <div onClick={() => selectMove(0)} class="col-span-2" classList={{ "bg-slate-100": state.ply === 0 }}>
-            <em>start</em>
+          <div onClick={() => selectMove(0)} class="col-span-2 cursor-pointer" classList={{ "bg-slate-100": state.ply === 0 }}>
+            <em>starting position</em>
           </div>
           <Index each={state.moves}>{(move, i) => {
             let moveState = () => {
@@ -181,12 +170,14 @@ Be3`)
         </div>
       </div>
 
-      <div class="col-span-2">
+      <div class="grid grid-rows-[min-content_1fr] col-span-2 h-44 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
         <div>
-          <button onClick={() => loadText(pgnText())}>Load text</button>
+          <button onClick={() => loadText(pgnText())} class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-2 focus:ring-sky-300 font-medium rounded-lg text-sm px-3 py-1.5 m-2 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Load text</button>
         </div>
 
-        <textarea rows={10} onInput={el => setPgnText(el.currentTarget.value)}>
+        <textarea onInput={el => setPgnText(el.currentTarget.value)}
+          class="block p-2.5 w-full text-sm text-gray-900 bg-white border-t border-gray-300 dark:border-gray-600 rounded-b-lg focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-300 dark:focus:border-sky-300"
+        >
           {pgnText()}
         </textarea>
       </div>
