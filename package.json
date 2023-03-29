@@ -1,10 +1,10 @@
 {
   "author": "Ben Martin",
-  "name": "chess-game-data-entry-assistant",
+  "name": "handwritten-pgn-error-corrector",
   "version": "0.0.0",
   "license": "GPL-3.0-or-later",
   "private": "true",
-  "description": "Assists in the typing of handwritten chess moves by simplifying the process of finding and fixing the erroneous moves",
+  "description": "Simplifies the process of locating and correcting errors in handwritten chess game recordings",
   "packageManager": "pnpm@8.0.0",
   "scripts": {
     "start": "vite",
