@@ -5,6 +5,7 @@
   "license": "GPL-3.0-or-later",
   "private": "true",
   "description": "Assists in the typing of handwritten chess moves by simplifying the process of finding and fixing the erroneous moves",
+  "packageManager": "pnpm@8.0.0",
   "scripts": {
     "start": "vite",
     "dev": "vite",
