@@ -1,7 +1,7 @@
 {
   "author": "Ben Martin",
   "name": "handwritten-pgn-error-corrector",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "GPL-3.0-or-later",
   "private": "true",
   "description": "Simplifies the process of locating and correcting errors in handwritten chess game recordings",
